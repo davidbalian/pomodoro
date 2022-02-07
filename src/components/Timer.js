@@ -1,41 +1,105 @@
 import React, { useEffect, useState } from "react";
 
 const Timer = () => {
-	const [start, setStart] = useState(false);
-	const [timerAmount, setTimerAmount] = useState(25);
-	const [time, setTime] = useState(timerAmount * 60);
+	// time for pomodoro
+	const [pomoTimeInput, setPomoTimeInput] = useState(25);
+	const [pomodoroTime, setPomodoroTime] = useState(pomoTimeInput * 60);
+
+	// time for break
+	const [breakTimeInput, setBreakTimeInput] = useState(5);
+	const [breakTime, setBreakTime] = useState(breakTimeInput * 60);
+
+	// state to start pomodoro and break
+	const [startPomo, setStartPomo] = useState(false);
+	const [startBreak, setStartBreak] = useState(false);
+
+	// break or pomo
+	const [breakOrPomo, setBreakOrPomo] = useState("pomo");
 
 	useEffect(() => {
-		start && setTimeout(() => setTime(time - 1), 1000);
-	}, [time, start]);
+		if (startPomo && breakOrPomo === "pomo") {
+			setTimeout(() => {
+				setPomodoroTime(pomodoroTime - 1);
+			}, 1000);
+
+			if (pomodoroTime === 0) {
+				setBreakOrPomo("break");
+			}
+		} else if (startBreak && breakOrPomo === "break") {
+			setTimeout(() => {
+				setBreakTime(breakTime - 1);
+			}, 1000);
+
+			if (breakTime === 0) {
+				setBreakOrPomo("pomo");
+			}
+		}
+	}, [pomodoroTime, startPomo, breakTime, startBreak, breakOrPomo]);
 
 	return (
 		<div>
-			<p>
-				Time left: {Math.floor(time / 60)} : {Math.floor(time % 60)}
-			</p>
-			<button
-				onClick={() => {
-					setStart(!start);
-				}}
-			>
-				{start ? "Stop" : "Start"}
-			</button>
+			<h1>Pomodoro Timer</h1>
+
+			{/* Actual timer */}
+			<h2>
+				{Math.floor(
+					(breakOrPomo === "pomo" ? pomodoroTime : breakTime) / 60
+				)}
+				:
+				{Math.floor(
+					(breakOrPomo === "pomo" ? pomodoroTime : breakTime) % 60
+				)}
+			</h2>
+
+			{/* Button to start and stop timer */}
+			{breakOrPomo == "pomo" ? (
+				<button
+					class='start-timer'
+					onClick={() => {
+						setStartPomo(!startPomo);
+					}}
+				>
+					{startPomo ? "STOP" : "START"}
+				</button>
+			) : (
+				<button
+					class='start-timer'
+					onClick={() => {
+						setStartBreak(!startBreak);
+					}}
+				>
+					{startBreak ? "STOP" : "START"}
+				</button>
+			)}
+
+			{/* Form to change pomo tine and break time */}
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
-					setTime(timerAmount * 60);
+
+					setPomodoroTime(pomoTimeInput * 60);
+					setBreakTime(breakTime);
 				}}
 			>
-				<label htmlFor='time-amount'>Enter timer duration: </label>
+				<label htmlFor='pomo'>Pomodoro Time: </label>
 				<input
 					type='number'
-					value={timerAmount}
+					value={pomoTimeInput}
 					onChange={(e) => {
-						setTimerAmount(e.target.value);
+						setPomoTimeInput(e.target.value);
 					}}
 				/>
-				<button type='submit'>Set Time</button>
+				<br />
+				<label htmlFor='break'>Break Time: </label>
+				<input
+					type='number'
+					value={breakTimeInput}
+					onChange={(e) => {
+						setBreakTimeInput(e.target.value);
+					}}
+				/>
+				<br />
+				<button type='submit'>Set Times</button>
 			</form>
 		</div>
 	);
