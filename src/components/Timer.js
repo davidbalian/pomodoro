@@ -79,7 +79,15 @@ const Timer = () => {
 					</h2>
 				) : (
 					<h2 className='timer-h2'>
-						{Math.floor(rest / 60)} : {Math.floor(rest % 60)}
+						{Math.floor(rest / 60) > 10
+							? Math.floor(rest / 60)
+							: `0${Math.floor(rest / 60)}`}{" "}
+						:{" "}
+						{Math.floor(rest % 60) === 0
+							? `${Math.floor(rest % 60)}0`
+							: Math.floor(rest % 60) < 10
+							? `0${Math.floor(rest % 60)}`
+							: Math.floor(rest % 60)}
 					</h2>
 				)}
 			</div>
