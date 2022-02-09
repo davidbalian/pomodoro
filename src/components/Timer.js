@@ -67,7 +67,15 @@ const Timer = () => {
 			<div className='timer'>
 				{bop ? (
 					<h2 className='timer-h2'>
-						{Math.floor(time / 60)} : {Math.floor(time % 60)}
+						{Math.floor(time / 60) > 10
+							? Math.floor(time / 60)
+							: `0${Math.floor(time / 60)}`}{" "}
+						:{" "}
+						{Math.floor(time % 60) === 0
+							? `${Math.floor(time % 60)}0`
+							: Math.floor(time % 60) < 10
+							? `0${Math.floor(time % 60)}`
+							: Math.floor(time % 60)}
 					</h2>
 				) : (
 					<h2 className='timer-h2'>
