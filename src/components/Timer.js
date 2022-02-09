@@ -1,105 +1,97 @@
 import React, { useEffect, useState } from "react";
+import "./Timer.css";
 
 const Timer = () => {
-	// time for pomodoro
-	const [pomoTimeInput, setPomoTimeInput] = useState(25);
-	const [pomodoroTime, setPomodoroTime] = useState(pomoTimeInput * 60);
+	const [start, setStart] = useState(0);
+	const [timeInput, setTimeInput] = useState(25);
+	const [time, setTime] = useState(timeInput * 60);
 
-	// time for break
-	const [breakTimeInput, setBreakTimeInput] = useState(5);
-	const [breakTime, setBreakTime] = useState(breakTimeInput * 60);
+	const [startRest, setStartRest] = useState(0);
+	const [restInput, setRestInput] = useState(5);
+	const [rest, setRest] = useState(restInput * 60);
 
-	// state to start pomodoro and break
-	const [startPomo, setStartPomo] = useState(false);
-	const [startBreak, setStartBreak] = useState(false);
-
-	// break or pomo
-	const [breakOrPomo, setBreakOrPomo] = useState("pomo");
+	const [bop, setBop] = useState(1);
 
 	useEffect(() => {
-		if (startPomo && breakOrPomo === "pomo") {
+		if (start && time > 0) {
 			setTimeout(() => {
-				setPomodoroTime(pomodoroTime - 1);
+				setTime(time - 1);
+				console.log(time);
 			}, 1000);
 
-			if (pomodoroTime === 0) {
-				setBreakOrPomo("break");
-			}
-		} else if (startBreak && breakOrPomo === "break") {
-			setTimeout(() => {
-				setBreakTime(breakTime - 1);
-			}, 1000);
-
-			if (breakTime === 0) {
-				setBreakOrPomo("pomo");
+			if (time < 2) {
+				setBop(0);
+				setRest(restInput * 60);
+				setStart(!start);
 			}
 		}
-	}, [pomodoroTime, startPomo, breakTime, startBreak, breakOrPomo]);
+		if (startRest && rest > 0) {
+			setTimeout(() => {
+				setRest(rest - 1);
+				console.log(rest);
+			}, 1000);
+
+			if (rest < 2) {
+				setBop(1);
+				setTime(timeInput * 60);
+				setStartRest(!startRest);
+			}
+		}
+	}, [time, start, startRest, rest, bop, restInput, timeInput]);
 
 	return (
-		<div>
-			<h1>Pomodoro Timer</h1>
-
-			{/* Actual timer */}
-			<h2>
-				{Math.floor(
-					(breakOrPomo === "pomo" ? pomodoroTime : breakTime) / 60
+		<div className='timer-component'>
+			<div className='timer-and-button'>
+				{bop ? (
+					<h2>
+						{Math.floor(time / 60)} : {Math.floor(time % 60)}
+					</h2>
+				) : (
+					<h2>
+						{Math.floor(rest / 60)} : {Math.floor(rest % 60)}
+					</h2>
 				)}
-				:
-				{Math.floor(
-					(breakOrPomo === "pomo" ? pomodoroTime : breakTime) % 60
+
+				{bop ? (
+					<button onClick={() => setStart(!start)}>
+						{start ? "STOP" : "START"}
+					</button>
+				) : (
+					<button onClick={() => setStartRest(!startRest)}>
+						{startRest ? "STOP" : "START"}
+					</button>
 				)}
-			</h2>
+			</div>
 
-			{/* Button to start and stop timer */}
-			{breakOrPomo == "pomo" ? (
-				<button
-					class='start-timer'
-					onClick={() => {
-						setStartPomo(!startPomo);
-					}}
-				>
-					{startPomo ? "STOP" : "START"}
-				</button>
-			) : (
-				<button
-					class='start-timer'
-					onClick={() => {
-						setStartBreak(!startBreak);
-					}}
-				>
-					{startBreak ? "STOP" : "START"}
-				</button>
-			)}
+			{/*bop ? <p>Pomodoro</p> : <p>Break</p>*/}
 
-			{/* Form to change pomo tine and break time */}
 			<form
+				className='timer-inputs'
 				onSubmit={(e) => {
 					e.preventDefault();
-
-					setPomodoroTime(pomoTimeInput * 60);
-					setBreakTime(breakTime);
+					setTime(timeInput * 60);
+					setRest(restInput * 60);
 				}}
 			>
-				<label htmlFor='pomo'>Pomodoro Time: </label>
-				<input
-					type='number'
-					value={pomoTimeInput}
-					onChange={(e) => {
-						setPomoTimeInput(e.target.value);
-					}}
-				/>
-				<br />
-				<label htmlFor='break'>Break Time: </label>
-				<input
-					type='number'
-					value={breakTimeInput}
-					onChange={(e) => {
-						setBreakTimeInput(e.target.value);
-					}}
-				/>
-				<br />
-				<button type='submit'>Set Times</button>
+				<div className='input'>
+					<label htmlFor='time'>Time: </label>
+					<input
+						type='number'
+						name='time'
+						value={timeInput}
+						onChange={(e) => setTimeInput(e.target.value)}
+					/>
+				</div>
+				<div className='input'>
+					<label htmlFor='rest'>Break: </label>
+					<input
+						type='number'
+						value={restInput}
+						onChange={(e) => setRestInput(e.target.value)}
+					/>
+				</div>
+
+				<button type='submit'>Set Time</button>
 			</form>
 		</div>
 	);
