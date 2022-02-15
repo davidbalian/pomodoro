@@ -14,6 +14,8 @@ const Timer = () => {
 
 	const [bop, setBop] = useState(1);
 
+	const [showForm, setShowForm] = useState(0);
+
 	useEffect(() => {
 		if (start && time > -1) {
 			setTimeout(() => {
@@ -92,56 +94,61 @@ const Timer = () => {
 				)}
 			</div>
 			{bop ? (
-				<button
-					className='timer-button'
-					onClick={() => setStart(!start)}
-				>
+				<button className='timer-button' onClick={() => setStart(!start)}>
 					{start ? "STOP" : "START"}
 				</button>
 			) : (
-				<button
-					className='timer-button'
-					onClick={() => setStartRest(!startRest)}
-				>
+				<button className='timer-button' onClick={() => setStartRest(!startRest)}>
 					{startRest ? "STOP" : "START"}
 				</button>
 			)}
 
 			{/*bop ? <p>Pomodoro</p> : <p>Break</p>*/}
 
-			<form
-				className='timer-inputs'
-				onSubmit={(e) => {
-					e.preventDefault();
-					setTime(timeInput * 60);
-					setRest(restInput * 60);
-				}}
-			>
-				<div className='input'>
-					<label htmlFor='time'>Time: </label>
-					<br />
-					<input
-						step='0.01'
-						type='number'
-						name='time'
-						className='input-1'
-						value={timeInput}
-						onChange={(e) => setTimeInput(e.target.value)}
-					/>
-				</div>
-				<div className='input'>
-					<label htmlFor='rest'>Break: </label>
-					<br />
-					<input
-						step='0.01'
-						type='number'
-						value={restInput}
-						onChange={(e) => setRestInput(e.target.value)}
-					/>
-				</div>
+			{showForm ? (
+				<form
+					className='timer-inputs'
+					onSubmit={(e) => {
+						e.preventDefault();
+						setTime(timeInput * 60);
+						setRest(restInput * 60);
+						setShowForm(0);
+					}}
+				>
+					<div className='input'>
+						<label htmlFor='time'>Time: </label>
+						<br />
+						<input
+							step='0.01'
+							type='number'
+							name='time'
+							className='input-1'
+							value={timeInput}
+							onChange={(e) => setTimeInput(e.target.value)}
+						/>
+					</div>
+					<div className='input'>
+						<label htmlFor='rest'>Break: </label>
+						<br />
+						<input
+							step='0.01'
+							type='number'
+							value={restInput}
+							onChange={(e) => setRestInput(e.target.value)}
+						/>
+					</div>
 
-				<button type='submit'>Set Time</button>
-			</form>
+					<button type='submit'>Set Time</button>
+				</form>
+			) : (
+				<button
+					onClick={() => {
+						setShowForm(1);
+					}}
+				>
+					Time Menu
+				</button>
+			)}
 		</div>
 	);
 };
