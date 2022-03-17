@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./Timer.css";
+import { Button, TextField } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@emotion/react";
 
 const Timer = () => {
-	const [bg, setBg] = useState({ backgroundColor: "#ff5a5f" });
+	const [bg, setBg] = useState({ backgroundColor: "#92140c" });
 
 	const [start, setStart] = useState(0);
 	const [timeInput, setTimeInput] = useState(25);
@@ -16,6 +19,22 @@ const Timer = () => {
 
 	const [showForm, setShowForm] = useState(0);
 
+	const theme = createTheme({
+		status: {
+			danger: "#e53e3e"
+		},
+		palette: {
+			primary: {
+				main: "#1e1e24",
+				darker: "#141418"
+			},
+			neutral: {
+				main: "#64748B",
+				contrastText: "#fff"
+			}
+		}
+	});
+
 	useEffect(() => {
 		if (start && time > -1) {
 			setTimeout(() => {
@@ -24,30 +43,9 @@ const Timer = () => {
 
 			if (time < 1) {
 				setBop(0);
-				setBg({ backgroundColor: "#087e8b" });
+				setBg({ backgroundColor: "#2274a5" });
 				setRest(restInput * 60);
 				setStart(!start);
-			}
-
-			if (time === 3) {
-				setBg({ backgroundColor: "#ff2b32" });
-				setTimeout(() => {
-					setBg({ backgroundColor: "#ff5a5f" });
-				}, 500);
-			}
-
-			if (time === 2) {
-				setBg({ backgroundColor: "#ff2b32" });
-				setTimeout(() => {
-					setBg({ backgroundColor: "#ff5a5f" });
-				}, 500);
-			}
-
-			if (time === 1) {
-				setBg({ backgroundColor: "#ff2b32" });
-				setTimeout(() => {
-					setBg({ backgroundColor: "#ff5a5f" });
-				}, 500);
 			}
 		}
 		if (startRest && rest > -1) {
@@ -57,7 +55,7 @@ const Timer = () => {
 
 			if (rest < 1) {
 				setBop(1);
-				setBg({ backgroundColor: "#ff5a5f" });
+				setBg({ backgroundColor: "#92140c" });
 				setTime(timeInput * 60);
 				setStartRest(!startRest);
 			}
@@ -65,90 +63,107 @@ const Timer = () => {
 	}, [time, start, startRest, rest, bop, restInput, timeInput]);
 
 	return (
-		<div className='timer-component' style={bg}>
-			<div className='timer'>
+		<div className='timer-component'>
+			<ThemeProvider theme={theme}>
+				<div className='timer' style={bg}>
+					{bop ? (
+						<h2 className='timer-h2'>
+							{Math.floor(time / 60) >= 10
+								? Math.floor(time / 60)
+								: `0${Math.floor(time / 60)}`}{" "}
+							:{" "}
+							{Math.floor(time % 60) === 0
+								? `${Math.floor(time % 60)}0`
+								: Math.floor(time % 60) < 10
+								? `0${Math.floor(time % 60)}`
+								: Math.floor(time % 60)}
+						</h2>
+					) : (
+						<h2 className='timer-h2'>
+							{Math.floor(rest / 60) >= 10
+								? Math.floor(rest / 60)
+								: `0${Math.floor(rest / 60)}`}{" "}
+							:{" "}
+							{Math.floor(rest % 60) === 0
+								? `${Math.floor(rest % 60)}0`
+								: Math.floor(rest % 60) < 10
+								? `0${Math.floor(rest % 60)}`
+								: Math.floor(rest % 60)}
+						</h2>
+					)}
+				</div>
 				{bop ? (
-					<h2 className='timer-h2'>
-						{Math.floor(time / 60) > 10
-							? Math.floor(time / 60)
-							: `0${Math.floor(time / 60)}`}{" "}
-						:{" "}
-						{Math.floor(time % 60) === 0
-							? `${Math.floor(time % 60)}0`
-							: Math.floor(time % 60) < 10
-							? `0${Math.floor(time % 60)}`
-							: Math.floor(time % 60)}
-					</h2>
+					<Button
+						size='large'
+						variant='contained'
+						className='timer-button'
+						onClick={() => setStart(!start)}
+					>
+						{start ? "STOP" : "START"}
+					</Button>
 				) : (
-					<h2 className='timer-h2'>
-						{Math.floor(rest / 60) > 10
-							? Math.floor(rest / 60)
-							: `0${Math.floor(rest / 60)}`}{" "}
-						:{" "}
-						{Math.floor(rest % 60) === 0
-							? `${Math.floor(rest % 60)}0`
-							: Math.floor(rest % 60) < 10
-							? `0${Math.floor(rest % 60)}`
-							: Math.floor(rest % 60)}
-					</h2>
+					<Button
+						size='large'
+						variant='contained'
+						className='timer-button'
+						onClick={() => setStartRest(!startRest)}
+					>
+						{startRest ? "STOP" : "START"}
+					</Button>
 				)}
-			</div>
-			{bop ? (
-				<button className='timer-button' onClick={() => setStart(!start)}>
-					{start ? "STOP" : "START"}
-				</button>
-			) : (
-				<button className='timer-button' onClick={() => setStartRest(!startRest)}>
-					{startRest ? "STOP" : "START"}
-				</button>
-			)}
 
-			{/*bop ? <p>Pomodoro</p> : <p>Break</p>*/}
+				{/*bop ? <p>Pomodoro</p> : <p>Break</p>*/}
 
-			{showForm ? (
-				<form
-					className='timer-inputs'
-					onSubmit={(e) => {
-						e.preventDefault();
-						setTime(timeInput * 60);
-						setRest(restInput * 60);
-						setShowForm(0);
-					}}
-				>
-					<div className='input'>
-						<label htmlFor='time'>Time: </label>
-						<br />
-						<input
-							step='0.01'
-							type='number'
-							name='time'
-							className='input-1'
-							value={timeInput}
-							onChange={(e) => setTimeInput(e.target.value)}
-						/>
-					</div>
-					<div className='input'>
-						<label htmlFor='rest'>Break: </label>
-						<br />
-						<input
-							step='0.01'
-							type='number'
-							value={restInput}
-							onChange={(e) => setRestInput(e.target.value)}
-						/>
-					</div>
+				{showForm ? (
+					<form
+						className='timer-inputs'
+						onSubmit={(e) => {
+							e.preventDefault();
+							setTime(timeInput * 60);
+							setRest(restInput * 60);
+							setShowForm(0);
+							setStart(0);
+							setStartRest(0);
+						}}
+					>
+						<div className='input'>
+							<TextField
+								className='input'
+								label='Time: '
+								variant='outlined'
+								type='number'
+								name='time'
+								value={timeInput}
+								onChange={(e) => setTimeInput(e.target.value)}
+							/>
+						</div>
+						<div className='input'>
+							<TextField
+								className='input'
+								label='Break: '
+								variant='outlined'
+								type='number'
+								value={restInput}
+								onChange={(e) => setRestInput(e.target.value)}
+							/>
+						</div>
 
-					<button type='submit'>Set Time</button>
-				</form>
-			) : (
-				<button
-					onClick={() => {
-						setShowForm(1);
-					}}
-				>
-					Time Menu
-				</button>
-			)}
+						<Button size='large' variant='contained' type='submit'>
+							Set Time
+						</Button>
+					</form>
+				) : (
+					<Button
+						size='large'
+						variant='contained'
+						onClick={() => {
+							setShowForm(1);
+						}}
+					>
+						Time Menu
+					</Button>
+				)}
+			</ThemeProvider>
 		</div>
 	);
 };
